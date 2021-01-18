@@ -1,0 +1,93 @@
+﻿<script>
+    @* 將 CustomRequest 設計為狀態不共用 *@
+    window.CustomRequest = function(option)
+    {
+        const self = this;
+
+        @* 下面是 Properties *@
+
+        @* 傳入參數需要的 Properties：
+           - Url
+           - RequestBody
+           - SuccessCallback
+           - ErrorCallback(Optional)
+           - CompleteCallback(Optional)
+        *@
+        self.Option = option;
+
+        @* 用來防止多次觸發
+           true => 已有 request 正在處理中
+           false => 沒有正在處理的 request
+        *@
+        self.Waiting = false;
+
+        @* 下面是 Functions *@
+
+        self.Post = function()
+        {
+            try
+            {
+                if (self.Waiting)
+                {
+                    console.log('已有 request 正在等待回應中');
+                    return;
+                }
+
+                self.Waiting = true;
+
+                $.ajax(
+                {
+                    beforeSend: function(request)
+                    {
+                        request.setRequestHeader("RequestVerificationToken", Antiforgery.RequestVerificationToken);
+                    },
+                    url: self.Option.Url,
+                    data: self.Option.RequestBody,
+                    type: 'post',
+
+                }).done(function(e)
+                {
+                    self.Option.SuccessCallback(e);
+                }).fail(function (e)
+                {
+                    self.Waiting = false;
+
+                    self.PostRequestError(e);
+
+                    if (self.Option.ErrorCallback)
+                    {
+                        self.Option.ErrorCallback(e.responseJSON);
+                    }
+                }).always(function (e)
+                {
+                    self.Waiting = false;
+
+                    if (self.Option.CompleteCallback)
+                    {
+                        self.Option.CompleteCallback(e);
+                    }
+                });
+            }
+            catch (e)
+            {
+                 alert('發生錯誤，請聯絡開發人員 !');
+                 console.log(e);
+
+                 self.Waiting = false;
+            }
+        }
+
+        self.PostRequestError = function(jqXHR, textStatus, errorThrown)
+        {
+            if (jqXHR.responseJSON
+            && jqXHR.responseJSON.Message)
+            {
+                alert(jqXHR.responseJSON.Message);
+            }
+            else
+            {
+                alert('發生錯誤，請聯絡開發人員');
+            }
+        }
+    };
+</script>

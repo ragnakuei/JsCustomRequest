@@ -1,0 +1,75 @@
+﻿@{
+}
+
+<div>
+    <input type="button"
+           value="Data01"
+           onclick="Ajax.Post(Data01);" />
+    <input type="button"
+           value="Data02"
+           onclick="Ajax.Post(Data02);" />
+</div>
+<div>
+    Ajax Result1:<span id="ajaxResult1"></span>
+</div>
+<div>
+    Ajax Result2:<span id="ajaxResult2"></span>
+</div>
+
+@section Scripts
+{
+    <partial name="_Antifogery" />
+    <script>
+
+        // 第一版：不想在每個 function 內都加上 $.ajax 語法，所以用 js object 來共用處理邏輯 !
+
+        var Ajax = {};
+        Ajax.Option = {};
+        Ajax.Post = function(option)
+        {
+            Ajax.Option = option;
+
+            $.ajax({
+                    beforeSend: function(request)
+                    {
+                        request.setRequestHeader("RequestVerificationToken", Antiforgery.RequestVerificationToken);
+                    },
+                    url: Ajax.Option.Url,
+                    type: 'post',
+                }).done(function(e)
+                {
+                    Ajax.Option.SuccessCallback(e);
+                });
+        }
+
+        @* GetDat01 *@
+
+        var Data01 = {};
+        Data01.Url = '@Url.Action("GetData01", "Data")';
+        Data01.Post = function()
+        {
+            $('#ajaxResult1').html('');
+            Ajax.Post.Post(Data01);
+        }
+        Data01.SuccessCallback = function(e)
+        {
+            console.log(e.Message);
+            $('#ajaxResult1').html(e.Data);
+        };
+
+        @* GetDat02 *@
+
+        var Data02 = {};
+        Data02.Url = '@Url.Action("GetData02", "Data")';
+        Data02.Post = function()
+        {
+            $('#ajaxResult2').html('');
+            Ajax.Post.Post(Data02);
+        }
+        Data02.SuccessCallback = function(e)
+        {
+            console.log(e.Message);
+            $('#ajaxResult2').html(e.Data);
+        };
+    </script>
+}

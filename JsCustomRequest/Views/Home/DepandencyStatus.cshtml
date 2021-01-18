@@ -1,0 +1,60 @@
+﻿@{
+}
+
+<div>
+    <input type="button"
+           value="Data01"
+           onclick="Data01.Post();" />
+    <input type="button"
+           value="Data02"
+           onclick="Data02.Post();" />
+</div>
+<div>
+    Ajax Result1:<span id="ajaxResult1"></span>
+</div>
+<div>
+    Ajax Result2:<span id="ajaxResult2"></span>
+</div>
+
+@section Scripts
+{
+    <partial name="_CustomRequest" />
+    <partial name="_Antifogery" />
+
+    <script>
+
+        @* GetDat01 *@
+
+        var Data01 = {};
+        Data01.Url = '@(Url.Action("GetData01", "Data"))';
+        Data01.RequestBody = { };
+        Data01.Post = function()
+        {
+            $('#ajaxResult1').html('');
+            Data01.Request.Post();
+        }
+        Data01.SuccessCallback = function(e)
+        {
+            console.log(e.Message);
+            $('#ajaxResult1').html(e.Data);
+        };
+        Data01.Request = new CustomRequest(Data01);
+
+        @* GetDat02 *@
+
+        var Data02 = {};
+        Data02.Url = '@(Url.Action("GetData02", "Data"))';
+        Data02.RequestBody = { };
+        Data02.Post = function()
+        {
+            $('#ajaxResult2').html('');
+            Data02.Request.Post();
+        }
+        Data02.SuccessCallback = function(e)
+        {
+            console.log(e.Message);
+            $('#ajaxResult2').html(e.Data);
+        };
+        Data02.Request = new CustomRequest(Data02);
+    </script>
+}

@@ -1,0 +1,13 @@
+﻿@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Xsrf
+@functions{
+    public string GetAntiXsrfRequestToken()
+    {
+        return Xsrf.GetAndStoreTokens(Context).RequestToken;
+    }
+}
+
+<script>
+    @* 將 Antiforgery 設計為狀態共用 *@
+    window.Antiforgery = {};
+    Antiforgery.RequestVerificationToken = '@(GetAntiXsrfRequestToken())';
+</script>

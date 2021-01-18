@@ -22,16 +22,13 @@ namespace JsCustomRequest.Controllers
         {
             return View();
         }
-
-        public IActionResult Privacy()
+        public IActionResult DepandencyStatus()
         {
             return View();
         }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
+        public IActionResult ShareStatus()
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            return View();
         }
     }
 }
